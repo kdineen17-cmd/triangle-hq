@@ -1,0 +1,12 @@
+# HTTP + data
+requests>=2.32
+pandas>=2.2
+python-dotenv>=1.0
+
+# SEC EDGAR Form 4 XML parsing (hardened against XML entity attacks)
+defusedxml>=0.7
+
+# Robinhood Agentic Trading is exposed as a remote MCP server with OAuth.
+# The official MCP Python SDK provides the streamable-HTTP client and the
+# OAuth 2.1 (PKCE + dynamic client registration) handshake.
+mcp>=2.2,<3        # code targets the 2.x Client + OAuthClientProvider API (pulls in httpx2)
