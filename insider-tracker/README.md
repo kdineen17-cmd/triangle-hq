@@ -153,6 +153,30 @@ filings.
 - **Re-alerts:** each alert is keyed on issuer + the set of insiders. A new insider
   joining an existing cluster triggers a new alert.
 
+## 7. Backtesting the signal (`backtest/`)
+
+This uses SEC's quarterly Insider Transactions Data Sets (one zip per quarter, the same
+filters as the live tracker) plus Robinhood daily prices:
+
+```bash
+python backtest/run_backtest.py download --start 2021-01-01   # SEC zips + XBRL share counts (needs sec.gov, data.sec.gov)
+python backtest/run_backtest.py events                        # point-in-time cluster events -> data/backtest/events.csv
+python backtest/run_backtest.py prices                        # daily bars via Robinhood MCP (uses your --link login)
+python backtest/run_backtest.py report                        # event study + $2k portfolio sim
+```
+
+- **No lookahead:**
+  - An event fires on the filing date when the 2nd qualifying insider's purchase became public.
+  - Entry is at the next day's open.
+  - A market cap uses the share count from the latest quarter end on or before the filing date.
+- **What the report shows:**
+  - Returns over 5, 10, 21 and 63 trading days, and excess returns vs IWM, with t-stats and a year-by-year breakdown.
+  - Each at 0.15% and 0.40% cost per side.
+  - A portfolio simulation with at most 5 positions, each held for 21 days.
+- **Bias warning:**
+  - Delisted or renamed tickers have no Robinhood price history, so failed companies drop out and the results look better than reality.
+  - The report prints the price-data coverage so you can judge how much.
+
 ## Layout
 
 ```
@@ -166,4 +190,8 @@ insider-tracker/
     ├── tracker.py      # SEC EDGAR Form 4 ingestion + cluster detection
     ├── trader.py       # Robinhood Agentic MCP client, OAuth, risk limits
     └── main.py         # CLI + terminal Y/N guardrail
+backtest/
+    ├── sec_data.py     # SEC quarterly insider datasets + share counts
+    ├── events.py       # point-in-time cluster events
+    └── run_backtest.py # download / events / prices / report
 ```
