@@ -40,7 +40,7 @@ def main(argv: list[str] | None = None) -> None:
         lg = load(LiveSource(), args.league, args.user, args.date, args.week_start, args.week_end,
                   parse_locked(args.locked))
     except urllib.error.URLError as e:
-        sys.exit(f"Network error: {e}. stats.nba.com sometimes times out; retry in a minute.")
+        sys.exit(f"Network error: {e}. Needs access to api.sleeper.app, stats.nba.com and cdn.nba.com; stats.nba.com sometimes times out, so retry in a minute.")
     print(json.dumps(to_json(lg), indent=2) if args.json else render(lg, args.free_agents))
 
 
